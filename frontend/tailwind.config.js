@@ -8,6 +8,8 @@ export default {
     extend: {
       colors: {
         milkman: {
+          blue: '#6BB0D3',
+          red: '#EF4444',
           'light-blue': '#E0F2F7', // A very light blue
           'primary-blue': '#A7D9ED', // A soft, primary light blue
           'dark-blue': '#6BB0D3', // A slightly darker blue for accents

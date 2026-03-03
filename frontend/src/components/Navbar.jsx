@@ -12,6 +12,11 @@ const Navbar = () => {
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+  const submitSearch = () => {
+    const q = searchQuery.trim();
+    navigate(q ? `/products?q=${encodeURIComponent(q)}` : '/products');
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-milkman-primary-blue shadow-md">
       <nav className="container mx-auto px-4 py-3 flex items-center justify-between">
@@ -30,8 +35,9 @@ const Navbar = () => {
               placeholder="Search for dairy products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') submitSearch(); }}
             />
-            <button className="bg-milkman-dark-blue hover:bg-milkman-light-blue px-4 flex items-center justify-center transition-colors">
+            <button onClick={submitSearch} className="bg-milkman-dark-blue hover:bg-milkman-light-blue px-4 flex items-center justify-center transition-colors">
               <Search className="w-5 h-5 text-milkman-white" />
             </button>
           </div>
@@ -49,6 +55,7 @@ const Navbar = () => {
           <Link to="/subscriptions" className="hidden sm:flex items-center text-milkman-white hover:text-milkman-dark-blue transition-colors">
             <span className="text-sm font-medium">Subscriptions</span>
           </Link>
+          
 
           {/* Cart */}
           <Link to="/cart" className="flex items-center text-milkman-white hover:text-milkman-dark-blue transition-colors relative">

@@ -46,6 +46,7 @@ const AppContent = () => {
               </ProtectedRoute>
             } 
           />
+          
         </Routes>
       </main>
       <Footer />

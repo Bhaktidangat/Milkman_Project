@@ -8,6 +8,13 @@ const Home = () => {
   const [products, setProducts] = useState([]);
   const [currentBanner, setCurrentBanner] = useState(0);
 
+  const extraProducts = [
+    { id: 'extra_buttermilk', name: 'Buttermilk', price: 50, image_url: 'https://consumer-voice.org/wp-content/uploads/2023/04/Buttermilk-A-Refreshing-Summer-Drink.jpg' },
+    { id: 'extra_lassi', name: 'Lassi', price: 60, image_url: 'https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDI0LTEwL3Jhd3BpeGVsb2ZmaWNlNF9waG90b19vZl9sYXNzaV9pbmRpYW5fZGVzc2VydF9tZW51X2lzb2xhdGVkX29uX18yOTBmYTZmNS1kYjJiLTQ4NTYtODMxMi04ODliZjczZDUyNDkucG5n.png' },
+    { id: 'extra_icecream', name: 'Ice Cream', price: 30, image_url: 'https://cdn.britannica.com/50/80550-050-5D392AC7/Scoops-kinds-ice-cream.jpg' },
+    { id: 'extra_goatmilk', name: 'Goat Milk (1L)', price: 90, image_url: 'https://5.imimg.com/data5/SELLER/Default/2025/6/523186518/FF/JK/UW/244938597/fresh-goat-milk.jpg' },
+  ];
+
   const banners = [
     {
       img: '', // Removed image for Fresh Milk banner
@@ -94,7 +101,7 @@ const Home = () => {
             { title: 'Fresh Milk', img: 'https://images.pexels.com/photos/799273/pexels-photo-799273.jpeg', link: '/products' },
             { title: 'Ghee & Butter', img: 'https://images.pexels.com/photos/4182680/pexels-photo-4182680.jpeg', link: '/products' },
             { title: 'Dahi & Paneer', img: 'https://images.pexels.com/photos/10809260/pexels-photo-10809260.jpeg', link: '/products' },
-            { title: 'Monthly Subscription', img: 'https://media.istockphoto.com/id/2177834863/photo/monthly-recurring-revenue.jpg?s=2048x2048&w=is&k=20&c=6oNoli2VQClIlaaMM_z2jDFEIVquWNJhhDwPTBBs7C4=', link: '/subscriptions' }
+            { title: 'Monthly Subscription', img: 'https://media.istockphoto.com/id/1498985176/vector/calendar-with-payment-date-payment-calendar-icon-planning-schedule-pay-reminder-payment-icon.jpg?s=2048x2048&w=is&k=20&c=bcM3XYdSmziRj5seUDgB6fw5AlmpKIKb6iOBR9uvmXo=', link: '/subscriptions' }
           ].map((cat, i) => (
             <div key={i} className="bg-milkman-white p-5 flex flex-col h-[420px] rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
               <h3 className="text-xl font-bold mb-3 text-milkman-dark-blue">{cat.title}</h3>
@@ -131,13 +138,14 @@ const Home = () => {
         <div className="bg-milkman-white p-6 mb-8 rounded-lg shadow-sm overflow-hidden">
           <h3 className="text-2xl font-bold mb-4 text-gray-800">Trending Dairy Products</h3>
           <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-            {products.map((p) => (
-              <div key={p.id} className="min-w-[200px] max-w-[200px] group cursor-pointer bg-milkman-off-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+            {[...products, ...extraProducts].map((p) => (
+              <Link key={p.id} to="/products" className="min-w-[200px] max-w-[200px] group bg-milkman-off-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <div className="h-[150px] overflow-hidden mb-3 rounded-md">
                   <img 
-                    src={p.image_url || 'https://via.placeholder.com/150'} 
+                    src={p.image_url || p.image || 'https://via.placeholder.com/200'} 
                     alt={p.name} 
                     className="w-full h-full object-contain group-hover:scale-105 transition-transform"
+                    onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/200'; }}
                   />
                 </div>
                 <h4 className="text-sm text-gray-700 font-medium line-clamp-2 h-10">{p.name}</h4>
@@ -151,7 +159,7 @@ const Home = () => {
                 </div>
                 <p className="text-lg font-bold mt-1 text-gray-900">₹{p.price}</p>
                 <p className="text-xs text-gray-500">Get it by Tomorrow, 7 AM</p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

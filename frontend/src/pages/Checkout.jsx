@@ -8,12 +8,42 @@ import { motion, AnimatePresence } from 'framer-motion';
 const Checkout = () => {
   const { cart, total, clearCart } = useCart();
   const [paymentMethod, setPaymentMethod] = useState('upi');
+  const [upiType, setUpiType] = useState('upi'); // 'upi' | 'netbanking'
+  const [upiId, setUpiId] = useState('');
+  const [bankName, setBankName] = useState('');
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardName, setCardName] = useState('');
+  const [cardExpiry, setCardExpiry] = useState(''); // MM/YY
+  const [cardCvv, setCardCvv] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
+  const isPaymentValid = () => {
+    if (paymentMethod === 'upi') {
+      if (upiType === 'upi') return /^[\w.-]+@[\w.-]+$/.test(upiId.trim());
+      return bankName.trim().length >= 3;
+    }
+    if (paymentMethod === 'card') {
+      const num = cardNumber.replace(/\s+/g, '');
+      const expOk = /^(0[1-9]|1[0-2])\/\d{2}$/.test(cardExpiry.trim());
+      return (
+        num.length >= 12 &&
+        cardName.trim().length >= 3 &&
+        expOk &&
+        /^\d{3,4}$/.test(cardCvv.trim())
+      );
+    }
+    if (paymentMethod === 'cod') return true;
+    return false;
+  };
+
   const handleCheckout = async (e) => {
     e.preventDefault();
+    if (!isPaymentValid()) {
+      alert('Please enter valid payment details before proceeding.');
+      return;
+    }
     setSubmitting(true);
     try {
       const items = cart.map(item => ({ id: item.id, quantity: item.quantity }));
@@ -109,6 +139,99 @@ const Checkout = () => {
                 </label>
               ))}
             </div>
+
+            {paymentMethod === 'upi' && (
+              <div className="space-y-6 pt-2">
+                <div className="flex gap-4">
+                  <button
+                    type="button"
+                    className={`px-4 py-2 rounded-xl border-2 font-bold text-sm uppercase tracking-widest ${upiType === 'upi' ? 'border-milkman-blue text-milkman-blue' : 'border-gray-200 text-gray-400'}`}
+                    onClick={() => setUpiType('upi')}
+                  >
+                    UPI
+                  </button>
+                  <button
+                    type="button"
+                    className={`px-4 py-2 rounded-xl border-2 font-bold text-sm uppercase tracking-widest ${upiType === 'netbanking' ? 'border-milkman-blue text-milkman-blue' : 'border-gray-200 text-gray-400'}`}
+                    onClick={() => setUpiType('netbanking')}
+                  >
+                    Net Banking
+                  </button>
+                </div>
+                {upiType === 'upi' ? (
+                  <div className="space-y-2">
+                    <label className="text-xs font-black text-milkman-blue tracking-widest uppercase">UPI ID</label>
+                    <input
+                      type="text"
+                      placeholder="e.g., name@bank"
+                      value={upiId}
+                      onChange={(e) => setUpiId(e.target.value)}
+                      className="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-2xl focus:outline-none focus:border-milkman-blue focus:bg-white transition-all font-bold text-gray-800 shadow-inner"
+                    />
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <label className="text-xs font-black text-milkman-blue tracking-widest uppercase">Bank Name</label>
+                    <input
+                      type="text"
+                      placeholder="Enter your bank name"
+                      value={bankName}
+                      onChange={(e) => setBankName(e.target.value)}
+                      className="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-2xl focus:outline-none focus:border-milkman-blue focus:bg-white transition-all font-bold text-gray-800 shadow-inner"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {paymentMethod === 'card' && (
+              <div className="space-y-4 pt-2">
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-milkman-blue tracking-widest uppercase">Card Number</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="1234 5678 9012 3456"
+                    value={cardNumber}
+                    onChange={(e) => setCardNumber(e.target.value)}
+                    className="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-2xl focus:outline-none focus:border-milkman-blue focus:bg-white transition-all font-bold text-gray-800 shadow-inner"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-milkman-blue tracking-widest uppercase">Name on Card</label>
+                  <input
+                    type="text"
+                    placeholder="Full name"
+                    value={cardName}
+                    onChange={(e) => setCardName(e.target.value)}
+                    className="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-2xl focus:outline-none focus:border-milkman-blue focus:bg-white transition-all font-bold text-gray-800 shadow-inner"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-xs font-black text-milkman-blue tracking-widest uppercase">Expiry (MM/YY)</label>
+                    <input
+                      type="text"
+                      placeholder="MM/YY"
+                      value={cardExpiry}
+                      onChange={(e) => setCardExpiry(e.target.value)}
+                      className="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-2xl focus:outline-none focus:border-milkman-blue focus:bg-white transition-all font-bold text-gray-800 shadow-inner"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-black text-milkman-blue tracking-widest uppercase">CVV</label>
+                    <input
+                      type="password"
+                      inputMode="numeric"
+                      placeholder="***"
+                      value={cardCvv}
+                      onChange={(e) => setCardCvv(e.target.value)}
+                      className="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-2xl focus:outline-none focus:border-milkman-blue focus:bg-white transition-all font-bold text-gray-800 shadow-inner"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -150,7 +273,7 @@ const Checkout = () => {
 
             <button
               onClick={handleCheckout}
-              disabled={submitting}
+              disabled={submitting || !isPaymentValid()}
               className="block z-10 w-full bg-milkman-blue text-white py-7 rounded-3xl font-black text-2xl hover:bg-milkman-red transition-all shadow-2xl hover:shadow-milkman-red/20 disabled:opacity-50 flex items-center justify-center gap-4 active:scale-95 group"
             >
               {submitting ? (
