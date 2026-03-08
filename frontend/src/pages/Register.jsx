@@ -13,8 +13,20 @@ const Register = () => {
     address: '',
   });
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
+
+  const validate = () => {
+    if (!formData.username.trim()) return 'Username is required.';
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(formData.email.trim())) return 'Enter a valid email address.';
+    if ((formData.password || '').length < 8) return 'Password must be at least 8 characters.';
+    if (/^\d+$/.test(formData.password || '')) return 'Password cannot be entirely numeric.';
+    const digits = (formData.phone || '').replace(/\D/g, '');
+    if (digits.length < 10) return 'Enter a valid 10-digit phone number.';
+    if (!formData.address.trim()) return 'Address is required.';
+    return '';
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -23,12 +35,51 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setFieldErrors({});
+    const v = validate();
+    if (v) {
+      setError(v);
+      return;
+    }
     setSubmitting(true);
     try {
-      await API.post('/accounts/register/', formData);
+      const digits = (formData.phone || '').replace(/\D/g, '');
+      const payload = {
+        username: formData.username.trim(),
+        email: formData.email.trim(),
+        password: formData.password,
+        phone: digits,
+        address: formData.address.trim(),
+      };
+      await API.post('/accounts/register/', payload);
       navigate('/login');
     } catch (err) {
-      setError(err.response?.data?.username?.[0] || 'Registration failed. Please check your inputs.');
+      // Log for debugging during development
+      console.error('Registration error:', err.response?.status, err.response?.data);
+      const data = err.response?.data;
+      let msg = 'Registration failed. Please check your inputs.';
+      if (data) {
+        if (typeof data === 'object' && data !== null) {
+          setFieldErrors(data);
+        }
+        if (typeof data === 'string') msg = data;
+        else if (data.detail) msg = data.detail;
+        else if (data.error) msg = data.error;
+        else if (Array.isArray(data)) msg = data.join(' ');
+        else {
+          try {
+            msg = Object.values(data).flat().join(' ');
+          } catch {
+            // ignore
+          }
+        }
+      } else if (err.message) {
+        msg = `Network or server error: ${err.message}`;
+      }
+      if (err.response?.status && msg && !/^\d{3}/.test(msg)) {
+        msg = `(${err.response.status}) ${msg}`;
+      }
+      setError(msg);
     } finally {
       setSubmitting(false);
     }
@@ -74,6 +125,7 @@ const Register = () => {
                 placeholder="Enter username"
                 onChange={handleChange}
               />
+              {fieldErrors.username && <p className="text-xs text-red-600 font-bold">{fieldErrors.username[0]}</p>}
             </div>
 
             <div className="space-y-2 group">
@@ -88,6 +140,7 @@ const Register = () => {
                 placeholder="Enter email"
                 onChange={handleChange}
               />
+              {fieldErrors.email && <p className="text-xs text-red-600 font-bold">{fieldErrors.email[0]}</p>}
             </div>
 
             <div className="space-y-2 group">
@@ -102,6 +155,7 @@ const Register = () => {
                 placeholder="••••••••"
                 onChange={handleChange}
               />
+              {fieldErrors.password && <p className="text-xs text-red-600 font-bold">{fieldErrors.password[0]}</p>}
             </div>
 
             <div className="space-y-2 group">
@@ -116,6 +170,7 @@ const Register = () => {
                 placeholder="9876543210"
                 onChange={handleChange}
               />
+              {fieldErrors.phone && <p className="text-xs text-red-600 font-bold">{fieldErrors.phone[0]}</p>}
             </div>
 
             <div className="space-y-2 group md:col-span-2">
@@ -129,6 +184,7 @@ const Register = () => {
                 placeholder="Enter your complete address for delivery"
                 onChange={handleChange}
               />
+              {fieldErrors.address && <p className="text-xs text-red-600 font-bold">{fieldErrors.address[0]}</p>}
             </div>
 
             <button

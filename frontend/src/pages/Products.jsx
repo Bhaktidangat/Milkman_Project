@@ -3,7 +3,7 @@ import API from '../api/axios';
 import ProductCard from '../components/ProductCard';
 import { Filter, Loader2, Star, ShoppingBag, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -12,13 +12,9 @@ const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const location = useLocation();
   const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
 
-  const extraProducts = [
-    { id: 'extra_buttermilk', name: 'Buttermilk', price: 50, image_url: 'https://consumer-voice.org/wp-content/uploads/2023/04/Buttermilk-A-Refreshing-Summer-Drink.jpg' },
-    { id: 'extra_lassi', name: 'Lassi', price: 60, image_url: 'https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDI0LTEwL3Jhd3BpeGVsb2ZmaWNlNF9waG90b19vZl9sYXNzaV9pbmRpYW5fZGVzc2VydF9tZW51X2lzb2xhdGVkX29uX18yOTBmYTZmNS1kYjJiLTQ4NTYtODMxMi04ODliZjczZDUyNDkucG5n.png' },
-    { id: 'extra_icecream', name: 'Ice Cream', price: 30, image_url: 'https://cdn.britannica.com/50/80550-050-5D392AC7/Scoops-kinds-ice-cream.jpg' },
-    { id: 'extra_goatmilk', name: 'Goat Milk (1L)', price: 90, image_url: 'https://5.imimg.com/data5/SELLER/Default/2025/6/523186518/FF/JK/UW/244938597/fresh-goat-milk.jpg' },
-  ];
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,7 +23,7 @@ const Products = () => {
           API.get('/products/products/'),
           API.get('/products/categories/'),
         ]);
-        setProducts([...prodRes.data, ...extraProducts]);
+        setProducts(prodRes.data);
         setCategories(catRes.data);
       } catch (err) {
         console.error('Error fetching products:', err);
@@ -47,9 +43,11 @@ const Products = () => {
   const byCategory = selectedCategory
     ? products.filter(p => p.category === selectedCategory)
     : products;
-  const filteredProducts = searchTerm
-    ? byCategory.filter(p => (p.name || '').toLowerCase().includes(searchTerm.toLowerCase()))
-    : byCategory;
+  const filteredProducts = selectedCategory
+    ? byCategory
+    : (searchTerm
+      ? byCategory.filter(p => (p.name || '').toLowerCase().includes(searchTerm.toLowerCase()))
+      : byCategory);
 
   if (loading) {
     return (
@@ -69,7 +67,7 @@ const Products = () => {
           <ul className="space-y-2">
             <li>
               <button 
-                onClick={() => setSelectedCategory(null)}
+                onClick={() => { setSelectedCategory(null); setSearchTerm(''); navigate('/products'); }}
                 className={`text-sm hover:text-[#c45500] ${!selectedCategory ? 'font-bold text-[#c45500]' : 'text-[#0f1111]'}`}
               >
                 All Products
@@ -78,7 +76,7 @@ const Products = () => {
             {categories.map(cat => (
               <li key={cat.id}>
                 <button 
-                  onClick={() => setSelectedCategory(cat.id)}
+                  onClick={() => { setSelectedCategory(cat.id); setSearchTerm(''); navigate('/products'); }}
                   className={`text-sm hover:text-[#c45500] capitalize ${selectedCategory === cat.id ? 'font-bold text-[#c45500]' : 'text-[#0f1111]'}`}
                 >
                   {cat.name}

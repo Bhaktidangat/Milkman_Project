@@ -8,6 +8,12 @@ const Subscriptions = () => {
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const extraProducts = [
+    { id: 'extra_buttermilk', name: 'Buttermilk', price: 50, image_url: 'https://consumer-voice.org/wp-content/uploads/2023/04/Buttermilk-A-Refreshing-Summer-Drink.jpg' },
+    { id: 'extra_lassi', name: 'Lassi', price: 60, image_url: 'https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDI0LTEwL3Jhd3BpeGVsb2ZmaWNlNF9waG90b19vZl9sYXNzaV9pbmRpYW5fZGVzc2VydF9tZW51X2lzb2xhdGVkX29uX18yOTBmYTZmNS1kYjJiLTQ4NTYtODMxMi04ODliZjczZDUyNDkucG5n.png' },
+    { id: 'extra_icecream', name: 'Ice Cream', price: 30, image_url: 'https://cdn.britannica.com/50/80550-050-5D392AC7/Scoops-kinds-ice-cream.jpg' },
+    { id: 'extra_goatmilk', name: 'Goat Milk (1L)', price: 90, image_url: 'https://5.imimg.com/data5/SELLER/Default/2025/6/523186518/FF/JK/UW/244938597/fresh-goat-milk.jpg' },
+  ];
   const [formData, setFormData] = useState({
     product: '',
     frequency: 'daily',

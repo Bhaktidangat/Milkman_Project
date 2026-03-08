@@ -8,12 +8,7 @@ const Home = () => {
   const [products, setProducts] = useState([]);
   const [currentBanner, setCurrentBanner] = useState(0);
 
-  const extraProducts = [
-    { id: 'extra_buttermilk', name: 'Buttermilk', price: 50, image_url: 'https://consumer-voice.org/wp-content/uploads/2023/04/Buttermilk-A-Refreshing-Summer-Drink.jpg' },
-    { id: 'extra_lassi', name: 'Lassi', price: 60, image_url: 'https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDI0LTEwL3Jhd3BpeGVsb2ZmaWNlNF9waG90b19vZl9sYXNzaV9pbmRpYW5fZGVzc2VydF9tZW51X2lzb2xhdGVkX29uX18yOTBmYTZmNS1kYjJiLTQ4NTYtODMxMi04ODliZjczZDUyNDkucG5n.png' },
-    { id: 'extra_icecream', name: 'Ice Cream', price: 30, image_url: 'https://cdn.britannica.com/50/80550-050-5D392AC7/Scoops-kinds-ice-cream.jpg' },
-    { id: 'extra_goatmilk', name: 'Goat Milk (1L)', price: 90, image_url: 'https://5.imimg.com/data5/SELLER/Default/2025/6/523186518/FF/JK/UW/244938597/fresh-goat-milk.jpg' },
-  ];
+  
 
   const banners = [
     {
@@ -138,8 +133,8 @@ const Home = () => {
         <div className="bg-milkman-white p-6 mb-8 rounded-lg shadow-sm overflow-hidden">
           <h3 className="text-2xl font-bold mb-4 text-gray-800">Trending Dairy Products</h3>
           <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-            {[...products, ...extraProducts].map((p) => (
-              <Link key={p.id} to="/products" className="min-w-[200px] max-w-[200px] group bg-milkman-off-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+            {products.map((p) => (
+              <Link key={p.id} to={`/products?q=${encodeURIComponent(p.name || '')}`} className="min-w-[200px] max-w-[200px] group bg-milkman-off-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <div className="h-[150px] overflow-hidden mb-3 rounded-md">
                   <img 
                     src={p.image_url || p.image || 'https://via.placeholder.com/200'} 
