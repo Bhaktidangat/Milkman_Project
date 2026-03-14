@@ -38,6 +38,16 @@ const Checkout = () => {
     return false;
   };
 
+  const formatCardNumber = (raw) => {
+    const digits = raw.replace(/\D/g, '').slice(0, 19);
+    return digits.replace(/(\d{4})(?=\d)/g, '$1 ');
+  };
+
+  const handleCardNumberChange = (e) => {
+    const value = e.target.value || '';
+    setCardNumber(formatCardNumber(value));
+  };
+
   const handleCheckout = async (e) => {
     e.preventDefault();
     if (!isPaymentValid()) {
@@ -46,6 +56,7 @@ const Checkout = () => {
     }
     setSubmitting(true);
     try {
+      await API.post('/payment/', { amount: total, method: paymentMethod });
       const items = cart.map(item => ({ id: item.id, quantity: item.quantity }));
       await API.post('/orders/orders/checkout/', { items, payment_method: paymentMethod });
       setSuccess(true);
@@ -191,9 +202,11 @@ const Checkout = () => {
                   <input
                     type="text"
                     inputMode="numeric"
+                    autoComplete="cc-number"
                     placeholder="1234 5678 9012 3456"
                     value={cardNumber}
-                    onChange={(e) => setCardNumber(e.target.value)}
+                    onChange={handleCardNumberChange}
+                    maxLength={23}
                     className="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-2xl focus:outline-none focus:border-milkman-blue focus:bg-white transition-all font-bold text-gray-800 shadow-inner"
                   />
                 </div>
@@ -201,6 +214,7 @@ const Checkout = () => {
                   <label className="text-xs font-black text-milkman-blue tracking-widest uppercase">Name on Card</label>
                   <input
                     type="text"
+                    autoComplete="cc-name"
                     placeholder="Full name"
                     value={cardName}
                     onChange={(e) => setCardName(e.target.value)}
@@ -212,6 +226,7 @@ const Checkout = () => {
                     <label className="text-xs font-black text-milkman-blue tracking-widest uppercase">Expiry (MM/YY)</label>
                     <input
                       type="text"
+                      autoComplete="cc-exp"
                       placeholder="MM/YY"
                       value={cardExpiry}
                       onChange={(e) => setCardExpiry(e.target.value)}
@@ -223,6 +238,7 @@ const Checkout = () => {
                     <input
                       type="password"
                       inputMode="numeric"
+                      autoComplete="cc-csc"
                       placeholder="***"
                       value={cardCvv}
                       onChange={(e) => setCardCvv(e.target.value)}

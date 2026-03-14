@@ -55,7 +55,14 @@ const Navbar = () => {
           <Link to="/subscriptions" className="hidden sm:flex items-center text-milkman-white hover:text-milkman-dark-blue transition-colors">
             <span className="text-sm font-medium">Subscriptions</span>
           </Link>
-          
+          <Link to="/dashboard" className="hidden sm:flex items-center text-milkman-white hover:text-milkman-dark-blue transition-colors">
+            <span className="text-sm font-medium">Dashboard</span>
+          </Link>
+          {user && (user.role === 'admin' || user.is_staff) && (
+            <Link to="/admin" className="hidden sm:flex items-center text-milkman-white hover:text-milkman-dark-blue transition-colors">
+              <span className="text-sm font-medium">Admin</span>
+            </Link>
+          )}
 
           {/* Cart */}
           <Link to="/cart" className="flex items-center text-milkman-white hover:text-milkman-dark-blue transition-colors relative">

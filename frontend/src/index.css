@@ -13,10 +13,7 @@
 body {
   margin: 0;
   padding: 0;
-  background-image: url('https://images.pexels.com/photos/7451957/pexels-photo-7451957.jpeg');
-  background-size: cover;
-  background-attachment: fixed;
-  background-position: center;
+  background: var(--milkman-off-white);
   color: #333333; /* A soft dark grey for text */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* A more modern, clean font */
   -webkit-font-smoothing: antialiased;

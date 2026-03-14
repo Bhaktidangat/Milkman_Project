@@ -8,11 +8,15 @@ class IsAdminOrReadOnly(permissions.BasePermission):
     Customers can only view.
     """
     def has_permission(self, request, view):
-        # Allow safe methods (GET, HEAD, OPTIONS) for anyone
         if request.method in permissions.SAFE_METHODS:
             return True
-        # Allow full access for admin users
-        return request.user.is_authenticated and request.user.role == 'admin'
+        return (
+            request.user.is_authenticated and (
+                getattr(request.user, 'role', None) == 'admin' or
+                getattr(request.user, 'is_staff', False) or
+                getattr(request.user, 'is_superuser', False)
+            )
+        )
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()

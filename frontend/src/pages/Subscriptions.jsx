@@ -49,12 +49,24 @@ const Subscriptions = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      await API.post('/payment/', { amount: 1, method: 'subscription' });
       await API.post('/subscriptions/subscriptions/', formData);
       setShowModal(false);
       fetchSubscriptions();
     } catch (err) {
       console.error('Subscription failed:', err);
       alert('Subscription failed. Please check your inputs.');
+    }
+  };
+
+  const cancelSubscription = async (id) => {
+    const ok = window.confirm('Are you sure you want to cancel this subscription?');
+    if (!ok) return;
+    try {
+      await API.post(`/subscriptions/subscriptions/${id}/cancel/`);
+      fetchSubscriptions();
+    } catch (err) {
+      alert('Failed to cancel subscription');
     }
   };
 
@@ -154,7 +166,7 @@ const Subscriptions = () => {
                     <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
                     <span className="text-sm font-black text-green-600 tracking-widest uppercase">Active Now</span>
                   </div>
-                  <button className="text-gray-300 hover:text-red-500 font-black text-xs tracking-widest uppercase transition-colors p-2 hover:bg-red-50 rounded-xl">
+                  <button onClick={() => cancelSubscription(sub.id)} className="text-gray-300 hover:text-red-500 font-black text-xs tracking-widest uppercase transition-colors p-2 hover:bg-red-50 rounded-xl">
                     CANCEL
                   </button>
                 </div>

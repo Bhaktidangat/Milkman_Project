@@ -52,7 +52,63 @@
 - Port in use: If `8000` is busy, stop other servers or change `VITE_API_PORT` and runserver port consistently
 - Missing packages: Ensure the venv is activated before installing or running the backend
 
-## Project Structure (Short)
-- Backend apps: [accounts](file:///c:/milkman/backend/apps/accounts), [products](file:///c:/milkman/backend/apps/products), [orders](file:///c:/milkman/backend/apps/orders), [subscriptions](file:///c:/milkman/backend/apps/subscriptions)
-- Frontend pages: [Home](file:///c:/milkman/frontend/src/pages/Home.jsx), [Products](file:///c:/milkman/frontend/src/pages/Products.jsx), [Cart](file:///c:/milkman/frontend/src/pages/Cart.jsx), [Checkout](file:///c:/milkman/frontend/src/pages/Checkout.jsx), [Login](file:///c:/milkman/frontend/src/pages/Login.jsx), [Register](file:///c:/milkman/frontend/src/pages/Register.jsx), [Subscriptions](file:///c:/milkman/frontend/src/pages/Subscriptions.jsx)
+## Deployment Ready
+The project is configured for deployment with:
+- **Environment Variables**: Use a `.env` file in the `backend/` folder for `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=False`, and `DJANGO_ALLOWED_HOSTS`.
+- **Static Files**: Backend uses `WhiteNoise` to serve static files. Run `python manage.py collectstatic` before deploying.
+- **Production Server**: `gunicorn` is included in `requirements.txt`.
+- **Frontend**: Run `npm run build` to generate the `dist/` folder for hosting.
+- **API URL**: Set `VITE_API_URL` in your frontend environment if the backend is on a different domain.
 
+## Project Structure (Short)
+- Backend apps:
+[accounts](file:///c:/milkman/backend/apps/accounts), 
+[products](file:///c:/milkman/backend/apps/products), 
+[orders](file:///c:/milkman/backend/apps/orders), 
+[subscriptions](file:///c:/milkman/backend/apps/subscriptions)
+
+
+- Frontend pages:
+[Home](file:///c:/milkman/frontend/src/pages/Home.jsx), 
+[Products](file:///c:/milkman/frontend/src/pages/Products.jsx),
+[Cart](file:///c:/milkman/frontend/src/pages/Cart.jsx), 
+[Checkout](file:///c:/milkman/frontend/src/pages/Checkout.jsx), 
+[Login](file:///c:/milkman/frontend/src/pages/Login.jsx), 
+[Register](file:///c:/milkman/frontend/src/pages/Register.jsx), 
+[Subscriptions](file:///c:/milkman/frontend/src/pages/Subscriptions.jsx)
+
+## Login and Roles
+- Single login for both Admin and Customer via [Login](file:///c:/milkman/frontend/src/pages/Login.jsx)
+- Admin setup:
+  - Create a superuser: `python manage.py createsuperuser`
+  - Or set an existing user as admin in Django Admin: http://127.0.0.1:8000/admin/
+  - Admin detection: role=`admin` or `is_staff`/`is_superuser`
+- After Admin login:
+  - Navbar shows “Admin” and “Dashboard”
+  - Admin Dashboard (React): http://localhost:5173/admin
+    - Manage categories and products
+    - Upload product images (stored under [media](file:///c:/milkman/backend/media))
+    - View users (admin-only list API)
+  - Django Admin (server-side): http://127.0.0.1:8000/admin/
+- After Customer login:
+  - Navbar shows “Subscriptions” and “Dashboard”
+  - Subscriptions: create plans with frequency and dates; payment is simulated
+  - Customer Dashboard: view and cancel subscriptions
+
+## Routes Overview
+- Backend API base: `http://127.0.0.1:8000/api`
+- Auth: `/accounts/register/`, `/accounts/login/`, `/accounts/token/refresh/`, `/accounts/profile/`
+- Products: `/products/products/`, `/products/categories/` (public read, admin write)
+- Subscriptions: `/subscriptions/subscriptions/` (customer scoped; admin sees all)
+- Orders: `/orders/orders/checkout/` (simulated payment then order creation)
+- Payment (simulated): `/payment/`
+
+## Frontend URLs
+- App: http://localhost:5173/
+- Customer Dashboard: http://localhost:5173/dashboard
+- Admin Dashboard: http://localhost:5173/admin
+
+## Demo Admin Credentials
+- Username: Admin
+- Password: Admin@1234
+- Note: These credentials are for demo/development. Change or remove for production.
